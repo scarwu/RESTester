@@ -1,0 +1,125 @@
+@charset "utf-8";
+/* CSS Document */
+
+html, body, h1 {
+	margin: 0;
+	padding: 0;
+}
+
+header {
+	height: 119px;
+	width: 100%;
+	background: #333;
+	color: #DDD;
+	-moz-box-shadow: 0 1px 10px #999;
+	-webkit-box-shadow: 0 1px 10px #999;
+	box-shadow: 0 1px 10px #999;
+	border-bottom: 1px solid #333;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 10000;
+}
+
+footer {
+	height: 50px;
+	text-align: center;
+}
+
+#logo {
+	margin: 0 auto;
+	min-width: 960px;
+	height: 89px;
+	text-align: center;
+}
+
+#logo img {
+	margin-top: 5px;
+	height: 80px;
+}
+
+#title {
+	min-width: 960px;
+	text-align: center;
+	background: #666;
+	font-size: 14px;
+	height: 30px;
+	line-height: 30px;
+}
+
+#nav {
+	margin: 130px auto 10px auto;
+	width: 900px;
+}
+
+#nav > button {
+	margin: 0;
+}
+
+#main {
+	margin: 0 auto;
+	padding: 0 10px;
+	width: 900px;
+	overflow: hidden;
+	font-size: 14px;
+}
+
+#main > .client,
+#main > .setting {
+	padding: 15px 25px;
+	border: 1px solid #ccc;
+	background: #EEE;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+#main h2 {
+	margin: 0;
+	padding: 0;
+}
+
+#main > .client .content,
+#main > .setting .content {
+	background: #DDD;
+	margin: 10px 0 0 0;
+	padding: 4px 25px;
+	border: 1px #CCC solid;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+#main > .setting span {
+	display: inline-block;
+	font-size: 14px;
+	width: 125px;
+}
+
+#main > .setting label {
+	display: block;
+}
+
+#main > .setting input {
+	display: inline-block;
+	width: 659px;
+}
+
+button {
+	margin: 0;
+	width: 100px;
+	height: 26px;
+	font-family: "Courier New";
+	font-size: 14px;
+}
+
+input {
+	padding: 4px 5px;
+	font-family: "Courier New";
+	font-size: 14px;
+	border: 1px #CCC solid;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	margin: 1px 0;
+}
