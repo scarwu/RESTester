@@ -1,2 +1,9 @@
+<<<<<<< HEAD
 .settings
 .project
+=======
+bin/*
+.classpath
+.settings
+.project
+>>>>>>> c134134a80ffd424848ab29f753fb9c678df8cfc
