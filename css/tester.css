@@ -22,7 +22,7 @@ header {
 }
 
 footer {
-	height: 50px;
+	height: 40px;
 	text-align: center;
 }
 
@@ -47,19 +47,10 @@ footer {
 	line-height: 30px;
 }
 
-#nav {
-	margin: 130px auto 10px auto;
-	width: 900px;
-}
-
-#nav > button {
-	margin: 0;
-}
-
 #main {
-	margin: 0 auto;
+	margin: 135px auto 10px auto;
 	padding: 0 10px;
-	width: 900px;
+	width: 1200px;
 	overflow: hidden;
 	font-size: 14px;
 }
@@ -72,18 +63,28 @@ footer {
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
+	overflow: hidden;
 }
 
-#main h2 {
+#main h2,
+#main h4 {
 	margin: 0;
 	padding: 0;
 }
 
-#main > .client .content,
+#main h2 {
+	display: inline-block;
+	margin-right: 25px;
+}
+
+#main > .client h4 {
+	margin: 5px 0;
+}
+
 #main > .setting .content {
 	background: #DDD;
 	margin: 10px 0 0 0;
-	padding: 4px 25px;
+	padding: 4px 10px;
 	border: 1px #CCC solid;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
@@ -93,16 +94,112 @@ footer {
 #main > .setting span {
 	display: inline-block;
 	font-size: 14px;
-	width: 125px;
+	width: 115px;
+	text-align: center;
 }
 
 #main > .setting label {
+	text-align: center;
 	display: block;
 }
 
 #main > .setting input {
 	display: inline-block;
-	width: 659px;
+	width: 600px;
+}
+
+#main > .client #request {
+	float: left;
+}
+
+#main > .client #response {
+	float: right;
+}
+
+#main > .client #request,
+#main > .client #response {
+	background: #DDD;
+	margin: 0;
+	width: 550px;
+	display: inline-block;
+	padding: 4px 10px;
+	border: 1px #CCC solid;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+#main > .client #request .option,
+#main > .client #request .header,
+#main > .client #request .params {
+	background: #CCC;
+	border: 1px #BBB solid;
+	padding: 4px 5px 2px 5px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+#main > .client #request .header .key,
+#main > .client #request .params .key {
+	margin: 0 0 2px 0;
+}
+
+#main > .client #request .header .value,
+#main > .client #request .params .value {
+	margin: 0 0 2px 2px;
+	width: 348px;
+}
+
+#main > .client #request .file input {
+	background: #CCC;
+	height: 24px;
+	line-height: 26px;
+	width: 538px;
+	border: 1px #BBB solid;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+#main > .client #request .option .host {
+	width: 247px;
+	margin: 1px -2px 0 0;
+}
+
+#main > .client #request .option .api {
+	width: 175px;
+	margin: 1px -2px 1px 0;
+}
+
+#main > .client #request .option .method {
+	width: 100px;
+	margin: 1px -2px 1px 0;
+}
+
+#main > .client #request .option .uri {
+	width: 424px;
+	margin: 1px -2px 2px 0;
+}
+
+#main > .client #response .header {
+	height: 125px;
+}
+
+#main > .client #response .json {
+	height: 125px;
+}
+
+#main > .client #request > span,
+#main > .client #response > span {
+	display: block;
+	margin: 10px 0 3px 2px;
+}
+
+#main > .setting > .client,
+#main > .client > .setting {
+	color: #CCC;
+	cursor: pointer;
 }
 
 button {
@@ -115,6 +212,32 @@ button {
 
 input {
 	padding: 4px 5px;
+	font-family: "Courier New";
+	font-size: 14px;
+	border: 1px #CCC solid;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	margin: 1px 0;
+}
+
+textarea {
+	resize: none;
+	width: 539px;
+	height: 150px;
+	padding: 5px;
+	margin: 0;
+	font-family: "Courier New";
+	font-size: 14px;
+	border: 1px #CCC solid;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+select {
+	width: 150px;
+	padding: 3px 5px 3px 2px;
 	font-family: "Courier New";
 	font-size: 14px;
 	border: 1px #CCC solid;

@@ -1,10 +1,9 @@
 RESTester
 =========
-####(from the Cixty-Tester)
 
 ### Description
 
-RESTful Server API Tester
+RESTful Server API Tester (from the Cixty-Tester)
 
 ### Requirement
 

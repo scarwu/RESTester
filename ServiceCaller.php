@@ -19,7 +19,8 @@ class ServiceCaller {
 	private $_user_agent;
 	
 	public function __construct($query_string) {
-		$info = json_decode($query_string, TRUE);
+		preg_match('/({(?:.|\n)+})(?:(?:.|\n)+)?/', $query_string, $match);
+		$info = json_decode($match[1], TRUE);
 
 		$host = isset($info['host']) ? $info['host'] : 'http://localhost';
 		$uri = isset($info['uri']) ? $info['uri'] : '/';
@@ -56,6 +57,17 @@ class ServiceCaller {
 		}
 	}
 	
+	private function fliter($response) {
+		$regex = '/((?:(?:.|\w)+\r\n)+)\r\n((?:.|\n)+)/';
+		
+		preg_match($regex, $response, $match);
+		
+		return json_encode(array(
+			'header' => $match[1],
+			'json' => json_decode($match[2], TRUE)
+		));
+	}
+	
 	/**
 	 * Send get method
 	 */
@@ -86,7 +98,8 @@ class ServiceCaller {
 		
 		$output = curl_exec($this->_client);
 		curl_close($this->_client);
-		echo $output;
+		
+		echo $this->fliter($output);
 	}
 	
 	/**

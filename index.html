@@ -18,20 +18,42 @@
 		<div id="title">RESTful Server API Tester</div>
 	</header>
 	
-	<div id="nav">
-		<button class="client">Client</button>
-		<button class="setting">Setting</button>
-	</div>
-	
 	<div id="main">
 		<div class="client">
-			<h2>Client</h2><hr>
-			<div class="content">
-				
+			<h2>Client</h2><h2 class="setting">Setting</h2><hr>
+			<div id="request">
+				<h4>Request</h4>
+				<span>Option</span>
+				<div class="option">
+					<select class="method"></select>
+					<input type="text" class="host" disabled="disabled" />
+					<select class="api"></select>
+					<input type="text" class="uri" />
+					<button class="submit">Submit</button>
+				</div>
+				<span>File</span>
+				<div class="file">
+					<input type="file" class="file" />
+				</div>
+				<span>Header</span>
+				<div class="header">
+					<div><input type="text" class="key add" /><input type="text" class="value add" /></div>
+				</div>
+				<span>Params</span>
+				<div class="params">
+					<div><input type="text" class="key add" /><input type="text" class="value add" /></div>
+				</div>
+			</div>
+			<div id="response">
+				<h4>Response</h4>
+				<span>Header</span>
+				<textarea class="header"></textarea>
+				<span>JSON</span>
+				<textarea class="json"></textarea>
 			</div>
 		</div>
 		<div class="setting">
-			<h2>Setting</h2><hr>
+			<h2 class="client">Client</h2><h2>Setting</h2><hr>
 			<div class="content">
 				<label class="host"><span>Host</span><input type="text" name="host" /></label>
 				<label class="api"><span>API</span><input type="text" name="api" /></label>
