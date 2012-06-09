@@ -19,8 +19,15 @@
 	</header>
 	
 	<div id="main">
+		<span id="nav">
+			<h2 class="client">Client</h2>
+			<h2 class="usage">Usage</h2>
+			<h2 class="error_code">ErrorCode</h2>
+			<h2 class="setting">Setting</h2>
+			<h2 class="about">About</h2>
+		</span>
+		<hr>
 		<div class="client">
-			<h2>Client</h2><h2 class="setting">Setting</h2><hr>
 			<div id="request">
 				<h4>Request</h4>
 				<span>Option</span>
@@ -28,12 +35,12 @@
 					<select class="method"></select>
 					<input type="text" class="host" disabled="disabled" />
 					<select class="api"></select>
-					<input type="text" class="uri" />
+					<input type="text" class="segments" />
 					<button class="submit">Submit</button>
 				</div>
 				<span>File</span>
 				<div class="file">
-					<input type="file" class="file" />
+					<input type="file" class="file_path" />
 				</div>
 				<span>Header</span>
 				<div class="header">
@@ -52,12 +59,26 @@
 				<textarea class="json"></textarea>
 			</div>
 		</div>
+		<div class="usage">
+			<div class="content">
+				
+			</div>
+		</div>
+		<div class="error_code">
+			<div class="content">
+				
+			</div>
+		</div>
 		<div class="setting">
-			<h2 class="client">Client</h2><h2>Setting</h2><hr>
 			<div class="content">
 				<label class="host"><span>Host</span><input type="text" name="host" /></label>
 				<label class="api"><span>API</span><input type="text" name="api" /></label>
 				<label class="method"><span>Method</span><input type="text" name="method" /></label>
+			</div>
+		</div>
+		<div class="about">
+			<div class="content">
+				
 			</div>
 		</div>
 	</div>
@@ -69,8 +90,6 @@
 	<!-- Define and Load Javascript -->
 	<script src="js/lib/jquery.js"></script>
 	<script src="js/lib/autocomplete.js"></script>
-	<script src="js/lib/underscore.js"></script>
-	<script src="js/lib/backbone.js"></script>
 	<script src="js/tester.js"></script>
 </body>
 </html>

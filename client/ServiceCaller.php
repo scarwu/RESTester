@@ -24,10 +24,9 @@ class ServiceCaller {
 
 		$host = isset($info['host']) ? $info['host'] : 'http://localhost';
 		$uri = isset($info['uri']) ? $info['uri'] : '/';
-		
 		$this->_url = $host . '/' . trim($uri, '/');
 		$this->_file = isset($info['file']) ? $info['file'] : NULL;
-		$this->_params = isset($info['params']) ? $info['params'] : NULL;
+		$this->_params = isset($info['params']) ? json_encode($info['params']) : NULL;
 		$this->_header = isset($info['header']) ? $info['header'] : array();
 		$this->_method = isset($info['method']) ? $info['method'] : 'get';
 		
@@ -58,13 +57,16 @@ class ServiceCaller {
 	}
 	
 	private function fliter($response) {
-		$regex = '/((?:(?:.|\w)+\r\n)+)\r\n((?:.|\n)+)/';
+		$regex = '/((?:(?:(?:.|\w)+\r\n)+\r\n)?)((?:.|\n)+)/';
 		
 		preg_match($regex, $response, $match);
 		
+		if(NULL == ($json = json_decode(trim($match[2]), TRUE)))
+			$json = trim($match[2]);
+
 		return json_encode(array(
-			'header' => $match[1],
-			'json' => json_decode($match[2], TRUE)
+			'header' => trim($match[1]),
+			'json' => $json
 		));
 	}
 	
@@ -80,7 +82,7 @@ class ServiceCaller {
 			CURLOPT_URL => $this->_url,
 			
 			// HTTP Method
-			CURLOPT_CUSTOMREQUEST => strtoupper($this->_method),
+			CURLOPT_CUSTOMREQUEST => 'GET',
 			
 			// User agent
 			CURLOPT_USERAGENT => $this->_user_agent,
@@ -106,17 +108,21 @@ class ServiceCaller {
 	 * Send post method
 	 */
 	private function post() {
+		$this->_header[] = 'Content-Type: application/json; charset=utf-8';
+		$this->_header[] = 'Content-Length: ' . strlen($this->_params);
+		
 		// Set option
 		curl_setopt_array($this->_client, array(
 			// Host + Uri + Query String
 			CURLOPT_URL => $this->_url,
 			
 			// HTTP Method
-			CURLOPT_POST => 1,
+			CURLOPT_CUSTOMREQUEST => 'POST',
 			
 			// User agent
 			CURLOPT_USERAGENT => $this->_user_agent,
 			
+			// Post Data
 			CURLOPT_POSTFIELDS => $this->_params,
 			
 			// HTTP Header
@@ -132,23 +138,31 @@ class ServiceCaller {
 		
 		$output = curl_exec($this->_client);
 		curl_close($this->_client);
-		echo $output;
+		
+		//echo $output;
+		echo $this->fliter($output);
 	}
 	
 	/**
 	 * Send put method
 	 */
 	private function put() {
+		$this->_header[] = 'Content-Type: application/json; charset=utf-8';
+		$this->_header[] = 'Content-Length: ' . strlen($this->_params);
+		
 		// Set option
 		curl_setopt_array($this->_client, array(
 			// Host + Uri + Query String
 			CURLOPT_URL => $this->_url,
 			
 			// HTTP Method
-			CURLOPT_PUT => 1,
+			CURLOPT_CUSTOMREQUEST => 'PUT',
 			
 			// User agent
 			CURLOPT_USERAGENT => $this->_user_agent,
+			
+			// Post Data
+			CURLOPT_POSTFIELDS => $this->_params,
 			
 			// HTTP Header
 			CURLOPT_HTTPHEADER => $this->_header,
@@ -163,13 +177,17 @@ class ServiceCaller {
 		
 		$output = curl_exec($this->_client);
 		curl_close($this->_client);
-		echo $output;
+		
+		echo $this->fliter($output);
 	}
 	
 	/**
 	 * Send delete method
 	 */
 	private function delete() {
+		$this->_header[] = 'Content-Type: application/json; charset=utf-8';
+		$this->_header[] = 'Content-Length: ' . strlen($this->_params);
+		
 		// Set option
 		curl_setopt_array($this->_client, array(
 			// Host + Uri + Query String
@@ -181,6 +199,9 @@ class ServiceCaller {
 			// User agent
 			CURLOPT_USERAGENT => $this->_user_agent,
 			
+			// Post Data
+			CURLOPT_POSTFIELDS => $this->_params,
+			
 			// HTTP Header
 			CURLOPT_HTTPHEADER => $this->_header,
 			
@@ -194,6 +215,7 @@ class ServiceCaller {
 		
 		$output = curl_exec($this->_client);
 		curl_close($this->_client);
-		echo $output;
+		
+		echo $this->fliter($output);
 	}
 }

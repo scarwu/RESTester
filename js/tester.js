@@ -1,16 +1,24 @@
 $(function() {
 	'use strict';
 	
+	// Server Setting
 	var host = 'http://localhost';
 	var api = 'service';
 	var method = 'GET';
+	
+	// Client Setting
 	var tester_url = window.location.toString();
 	
+	// Service API data
 	var list;
 	var usage;
+	var params;
 	
 	$(document).ready(function() {
-		$('#main > .setting').hide();
+		// Hidden unused page
+		$('#nav .client').siblings().addClass('non_active');
+		$('#main > .client').siblings('div').hide();
+		
 		$('#main > .setting .host input').val(host);
 		$('#main > .setting .api input').val(api);
 		$('#main > .setting .method input').val(method);
@@ -24,16 +32,12 @@ $(function() {
 		});
 	});
 
-	$('#main > .client > .setting').click(function() {
-		$('#main > .setting').show();
-		$('#main > .client').hide();
+	$('#nav h2').click(function() {
+		$(this).removeClass('non_active').siblings().addClass('non_active');
+		var name = $(this).attr('class');
+		$('#main > .' + name).show().siblings('div').hide();
 	});
-	
-	$('#main > .setting > .client').click(function() {
-		$('#main > .setting').hide();
-		$('#main > .client').show();
-	});
-	
+
 	function addRow(target) {
 		var div = $('<div></div>');
 		var key = '<input type="text" class="key add" />';
@@ -41,7 +45,7 @@ $(function() {
 		div.html(key+value);
 		$(target).append(div);
 	}
-	
+
 	$('#main > .client #request .header .add').live('focus', function() {
 		$('#main > .client #request .header .key').removeClass('add');
 		$('#main > .client #request .header .value').removeClass('add');
@@ -52,15 +56,15 @@ $(function() {
 		$('#main > .client #request .params .key').removeClass('add');
 		$('#main > .client #request .params .value').removeClass('add');
 		addRow('#main > .client #request .params');
+		bindPrams();
 	});
 
-	function loadServiceList(json_string) {
-		json_string = JSON.stringify(json_string);
+	function loadServiceList(json) {
 		$.ajax({
 			dataType: 'json',
 			cache: false,
 			type: method,
-			url: tester_url + 'AjaxHandler.php?' + json_string,
+			url: tester_url + 'client/AjaxHandler.php?' + JSON.stringify(json),
 			success: function(output) {
 				list = output['json']['list'];
 				usage = output['json']['usage'];
@@ -71,14 +75,39 @@ $(function() {
 					$('#main > .client #request .option .api').append(option);
 				});
 				
-				$.each(usage[list[0]], function(method, action) {
-					$('.method').append('<option>' + method + '</option>');
-				});
+				loadAPIUsage(usage[list[0]]);
+				genUsagePramas();
 				
 				$('#response .header').val(output['header']);
 				$('#response .json').val(JSON.stringify(output['json']));
 			}
 		});
+	}
+	
+	function loadAPIUsage(api) {
+		$.each(api, function(method, action) {
+			$('.method').append('<option>' + method + '</option>');
+		});
+	}
+	
+	function bindPrams() {
+		$('#main > .client #request .params .key').autocomplete(params, {matchContains: true, width: 173});
+	} 
+	
+	function genUsagePramas() {
+		params = Array();
+		
+		$.each(usage, function() {
+			$.each(this, function() {
+				$.each(this, function() {
+					$.each(this['input'], function() {
+						if(jQuery.inArray(this[0], params) == -1)
+							params.push(this[0]);
+					});
+				});
+			});
+		});
+		bindPrams();
 	}
 	
 	$('#main > .client #request .option .api').live('change', function() {
@@ -89,7 +118,58 @@ $(function() {
 		});
 	});
 	
+	function callService(json) {
+		$.ajax({
+			dataType: 'json',
+			cache: false,
+			type: method,
+			url: tester_url + 'client/AjaxHandler.php?' + JSON.stringify(json),
+			success: function(output) {
+				$('#response .header').val(output['header']);
+				$('#response .json').val(JSON.stringify(output['json']));
+			}
+		});
+	}
+	
 	$('#main > .client #request .option .submit').click(function() {
+		var json = {};
+		var request = '#main > .client #request ';
 		
+		// Host
+		json['host'] = $(request + '.option .host').val();
+		
+		// Uri
+		json['uri'] = $(request + '.option .api').val();
+		if($(request + '.option .segments').val() != "")
+			 json['uri'] += '/' + $(request + '.option .segments').val();
+		
+		// Method
+		json['method'] = $(request + '.option .method').val();
+		
+		// File
+		if($(request + '.file input').val() != "")
+			json['file'] = $(request + '.file input').val();
+		
+		// Header
+		$.each($(request + '.header div'), function() {
+			if($(this).children('.key').val() != "" && $(this).children('.value').val() != "") {
+				if(json['header'] != {})
+					json['header'] = {};
+				json['header'][$(this).children('.key').val()] = $(this).children('.value').val();
+			}
+		});
+		
+		// Params
+		$.each($(request + '.params div'), function() {
+			if($(this).children('.key').val() != "" && $(this).children('.value').val() != "") {
+				if(json['params'] == undefined)
+					json['params'] = {};
+				json['params'][$(this).children('.key').val()] = $(this).children('.value').val();
+			}
+		});
+		
+		console.log(JSON.stringify(json));
+
+		callService(json);
 	});
 });

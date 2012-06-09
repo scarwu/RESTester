@@ -49,14 +49,9 @@ footer {
 
 #main {
 	margin: 135px auto 10px auto;
-	padding: 0 10px;
-	width: 1200px;
+	width: 1150px;
 	overflow: hidden;
 	font-size: 14px;
-}
-
-#main > .client,
-#main > .setting {
 	padding: 15px 25px;
 	border: 1px solid #ccc;
 	background: #EEE;
@@ -81,6 +76,9 @@ footer {
 	margin: 5px 0;
 }
 
+#main > .usage .content,
+#main > .error_code .content,
+#main > .about .content,
 #main > .setting .content {
 	background: #DDD;
 	margin: 10px 0 0 0;
@@ -177,7 +175,7 @@ footer {
 	margin: 1px -2px 1px 0;
 }
 
-#main > .client #request .option .uri {
+#main > .client #request .option .segments {
 	width: 424px;
 	margin: 1px -2px 2px 0;
 }
@@ -196,8 +194,7 @@ footer {
 	margin: 10px 0 3px 2px;
 }
 
-#main > .setting > .client,
-#main > .client > .setting {
+#nav .non_active {
 	color: #CCC;
 	cursor: pointer;
 }
