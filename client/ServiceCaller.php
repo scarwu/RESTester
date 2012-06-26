@@ -12,6 +12,7 @@
 class ServiceCaller {
 	private $_host;
 	private $_uri;
+	private $_raw;
 	private $_method;
 	private $_header;
 	private $_params;
@@ -29,45 +30,79 @@ class ServiceCaller {
 		$this->_params = isset($info['params']) ? json_encode($info['params']) : NULL;
 		$this->_header = isset($info['header']) ? $info['header'] : array();
 		$this->_method = isset($info['method']) ? $info['method'] : 'get';
+		$this->_raw = isset($info['raw']) ? $info['raw'] : FALSE;
 		
-		$this->_user_agent = 'RESTester/0.1';
+		$this->_user_agent = 'RESTester/Rev.4';
 		$this->_client = curl_init();
+		
+		if(count($this->_header) > 0) {
+			foreach($this->_header as $key => $value)
+				$header[] = $key . ': ' . $value;
+			$this->_header = $header;
+		}
+		
+		// User agent
+		curl_setopt($this->_client, CURLOPT_USERAGENT, $this->_user_agent);
+		
+		// HTTP Header
+		curl_setopt($this->_client, CURLOPT_HTTPHEADER, $this->_header);
+		
+		// Result include header
+		curl_setopt($this->_client, CURLOPT_HEADER, 1);
+		
+		curl_setopt($this->_client, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($this->_client, CURLOPT_FOLLOWLOCATION, true);
 	}
 	
 	/**
 	 * Run
 	 */
 	public function run() {
+		$output = '';
+		
 		switch(strtolower($this->_method)) {
 			case 'get':
-				$this->get();
+				$output = $this->get();
 				break;
 			case 'post':
-				$this->post();
+				$output = $this->post();
 				break;
 			case 'put':
-				$this->put();
+				$output = $this->put();
 				break;
 			case 'delete':
-				$this->delete();
+				$output = $this->delete();
 				break;
 			default:
 				header('HTTP/1.1 404 Not Found');
 		}
+		
+		curl_close($this->_client);
+		
+		if(TRUE == $this->_raw)
+			echo $output;
+		else
+			echo $this->fliter($output);
 	}
 	
 	private function fliter($response) {
-		$regex = '/((?:(?:(?:.|\w)+\r\n)+\r\n)?)((?:.|\n)+)/';
+		$regex = '/((?:.|\n)+)\r\n\r\n({.+})?$/';
 		
-		preg_match($regex, $response, $match);
-		
-		if(NULL == ($json = json_decode(trim($match[2]), TRUE)))
-			$json = trim($match[2]);
-
-		return json_encode(array(
-			'header' => trim($match[1]),
-			'json' => $json
-		));
+		if(preg_match($regex, $response, $match)) {
+			if(isset($match[2])) {
+				if(NULL == ($json = json_decode(trim($match[2]), TRUE)))
+					$json = trim($match[2]);
+	
+				return json_encode(array(
+					'header' => trim($match[1]),
+					'json' => $json
+				));
+			}
+			else
+				return json_encode(array('header' => trim($match[1])));
+		}
+		else
+			return json_encode(array('header' => trim($response)));
 	}
 	
 	/**
@@ -76,109 +111,79 @@ class ServiceCaller {
 	private function get() {
 		$this->_url .= NULL !== $this->_params ? '?' . $this->_params : '';
 		
-		// Set option
-		curl_setopt_array($this->_client, array(
-			// Host + Uri + Query String
-			CURLOPT_URL => $this->_url,
-			
-			// HTTP Method
-			CURLOPT_CUSTOMREQUEST => 'GET',
-			
-			// User agent
-			CURLOPT_USERAGENT => $this->_user_agent,
-			
-			// HTTP Header
-			CURLOPT_HTTPHEADER => $this->_header,
-			
-			// Result include header
-			CURLOPT_HEADER => 1,
-			
-			CURLOPT_RETURNTRANSFER => true,
-			
-			CURLOPT_FOLLOWLOCATION => true
-		));
+		// Host + Uri + Query String
+		curl_setopt($this->_client, CURLOPT_URL, $this->_url);
 		
-		$output = curl_exec($this->_client);
-		curl_close($this->_client);
+		// HTTP Method
+		curl_setopt($this->_client, CURLOPT_CUSTOMREQUEST, 'GET');
 		
-		echo $this->fliter($output);
+		return curl_exec($this->_client);
 	}
 	
 	/**
 	 * Send post method
 	 */
 	private function post() {
-		$this->_header[] = 'Content-Type: application/json; charset=utf-8';
-		$this->_header[] = 'Content-Length: ' . strlen($this->_params);
+		// Host + Uri + Query String
+		curl_setopt($this->_client, CURLOPT_URL, $this->_url);
 		
-		// Set option
-		curl_setopt_array($this->_client, array(
-			// Host + Uri + Query String
-			CURLOPT_URL => $this->_url,
-			
-			// HTTP Method
-			CURLOPT_CUSTOMREQUEST => 'POST',
-			
-			// User agent
-			CURLOPT_USERAGENT => $this->_user_agent,
+		// HTTP Method
+		curl_setopt($this->_client, CURLOPT_CUSTOMREQUEST, 'POST');
+
+		if(NULL === $this->_file) {
+			$this->_header[] = 'Content-Type: application/json; charset=utf-8';
+			$this->_header[] = 'Content-Length: ' . strlen($this->_params);
 			
 			// Post Data
-			CURLOPT_POSTFIELDS => $this->_params,
+			curl_setopt($this->_client, CURLOPT_POSTFIELDS, $this->_params);
+		}
+		else {
+			// Post Data
+			curl_setopt($this->_client, CURLOPT_POSTFIELDS, array('json' => $this->_params, 'file' => '@'.$this->_file));
 			
-			// HTTP Header
-			CURLOPT_HTTPHEADER => $this->_header,
+			// File path
+			// curl_setopt($this->_client, CURLOPT_INFILE, fopen($this->_file, 'r'));
+				
+			// File size
+			// curl_setopt($this->_client, CURLOPT_INFILESIZE, filesize($this->_file));
 			
-			// Result include header
-			CURLOPT_HEADER => 1,
-			
-			CURLOPT_RETURNTRANSFER => true,
-			
-			CURLOPT_FOLLOWLOCATION => true
-		));
+			curl_setopt($this->_client, CURLOPT_BINARYTRANSFER, true);
+		}
 		
-		$output = curl_exec($this->_client);
-		curl_close($this->_client);
-		
-		//echo $output;
-		echo $this->fliter($output);
+		return curl_exec($this->_client);
 	}
 	
 	/**
 	 * Send put method
 	 */
 	private function put() {
-		$this->_header[] = 'Content-Type: application/json; charset=utf-8';
-		$this->_header[] = 'Content-Length: ' . strlen($this->_params);
+		// Host + Uri + Query String
+		curl_setopt($this->_client, CURLOPT_URL, $this->_url);
 		
-		// Set option
-		curl_setopt_array($this->_client, array(
-			// Host + Uri + Query String
-			CURLOPT_URL => $this->_url,
-			
-			// HTTP Method
-			CURLOPT_CUSTOMREQUEST => 'PUT',
-			
-			// User agent
-			CURLOPT_USERAGENT => $this->_user_agent,
-			
+		// HTTP Method
+		curl_setopt($this->_client, CURLOPT_CUSTOMREQUEST, 'PUT');
+		
+		if(NULL === $this->_file) {
+			$this->_header[] = 'Content-Type: application/json; charset=utf-8';
+			$this->_header[] = 'Content-Length: ' . strlen($this->_params);
+
 			// Post Data
-			CURLOPT_POSTFIELDS => $this->_params,
+			curl_setopt($this->_client, CURLOPT_POSTFIELDS, $this->_params);
+		}
+		else {
+			// Post Data
+			curl_setopt($this->_client, CURLOPT_POSTFIELDS, array('json' => $this->_params, 'file' => '@'.$this->_file));
 			
-			// HTTP Header
-			CURLOPT_HTTPHEADER => $this->_header,
+			// File path
+			// curl_setopt($this->_client, CURLOPT_INFILE, fopen($this->_file, 'r'));
+				
+			// File size
+			// curl_setopt($this->_client, CURLOPT_INFILESIZE, filesize($this->_file));
 			
-			// Result include header
-			CURLOPT_HEADER => 1,
-			
-			CURLOPT_RETURNTRANSFER => true,
-			
-			CURLOPT_FOLLOWLOCATION => true
-		));
+			curl_setopt($this->_client, CURLOPT_BINARYTRANSFER, true);
+		}
 		
-		$output = curl_exec($this->_client);
-		curl_close($this->_client);
-		
-		echo $this->fliter($output);
+		return curl_exec($this->_client);
 	}
 	
 	/**
@@ -188,34 +193,15 @@ class ServiceCaller {
 		$this->_header[] = 'Content-Type: application/json; charset=utf-8';
 		$this->_header[] = 'Content-Length: ' . strlen($this->_params);
 		
-		// Set option
-		curl_setopt_array($this->_client, array(
-			// Host + Uri + Query String
-			CURLOPT_URL => $this->_url,
-			
-			// HTTP Method
-			CURLOPT_CUSTOMREQUEST => 'DELETE',
-			
-			// User agent
-			CURLOPT_USERAGENT => $this->_user_agent,
-			
-			// Post Data
-			CURLOPT_POSTFIELDS => $this->_params,
-			
-			// HTTP Header
-			CURLOPT_HTTPHEADER => $this->_header,
-			
-			// Result include header
-			CURLOPT_HEADER => 1,
-			
-			CURLOPT_RETURNTRANSFER => true,
-			
-			CURLOPT_FOLLOWLOCATION => true
-		));
+		// Host + Uri + Query String
+		curl_setopt($this->_client, CURLOPT_URL, $this->_url);
 		
-		$output = curl_exec($this->_client);
-		curl_close($this->_client);
+		// HTTP Method
+		curl_setopt($this->_client, CURLOPT_CUSTOMREQUEST, 'DELETE');
 		
-		echo $this->fliter($output);
+		// Post Data
+		curl_setopt($this->_client, CURLOPT_POSTFIELDS, $this->_params);
+		
+		return curl_exec($this->_client);
 	}
 }

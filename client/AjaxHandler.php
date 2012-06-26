@@ -22,6 +22,13 @@ else
 // Load Service Caller
 require_once 'ServiceCaller.php';
 
-// Run Service Caller
-$caller = new ServiceCaller(urldecode($_SERVER['QUERY_STRING']));
-$caller->run();
+if($_SERVER['QUERY_STRING'] != '') {
+	if(!file_exists('/tmp/RESTester')) {
+		mkdir('/tmp/RESTester', 0777);
+		chmod('/tmp/RESTester', 0777);
+	}
+	
+	// Run Service Caller
+	$caller = new ServiceCaller(urldecode($_SERVER['QUERY_STRING']));
+	$caller->run();
+}

@@ -12,6 +12,7 @@ $(function() {
 	// Service API data
 	var list;
 	var usage;
+	var statuscode;
 	var params;
 	
 	$(document).ready(function() {
@@ -68,6 +69,7 @@ $(function() {
 			success: function(output) {
 				list = output['json']['list'];
 				usage = output['json']['usage'];
+				statuscode = output['json']['statuscode'];
 				
 				$.each(list, function() {
 					var option = $('<option></option>');
@@ -126,7 +128,10 @@ $(function() {
 			url: tester_url + 'client/AjaxHandler.php?' + JSON.stringify(json),
 			success: function(output) {
 				$('#response .header').val(output['header']);
-				$('#response .json').val(JSON.stringify(output['json']));
+				if(output['json'] != undefined)
+					$('#response .json').val(JSON.stringify(output['json']));
+				else
+					$('#response .json').val('');
 			}
 		});
 	}
@@ -145,15 +150,15 @@ $(function() {
 		
 		// Method
 		json['method'] = $(request + '.option .method').val();
-		
+
 		// File
-		if($(request + '.file input').val() != "")
-			json['file'] = $(request + '.file input').val();
+		if($(request + '.file_path').val() != "")
+			json['file'] = '/tmp/RESTester/' + $(request + '.file_path')[0].files.item(0).name;
 		
 		// Header
 		$.each($(request + '.header div'), function() {
 			if($(this).children('.key').val() != "" && $(this).children('.value').val() != "") {
-				if(json['header'] != {})
+				if(json['header'] == undefined)
 					json['header'] = {};
 				json['header'][$(this).children('.key').val()] = $(this).children('.value').val();
 			}
