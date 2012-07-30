@@ -139,8 +139,11 @@ class ServiceCaller {
 		}
 		else {
 			// Post Data
-			curl_setopt($this->_client, CURLOPT_POSTFIELDS, array('json' => $this->_params, 'file' => '@'.$this->_file));
-			
+			if(NULL != $this->_params)
+				curl_setopt($this->_client, CURLOPT_POSTFIELDS, array('json' => $this->_params, 'file' => '@'.$this->_file));
+			else
+				curl_setopt($this->_client, CURLOPT_POSTFIELDS, array('file' => '@'.$this->_file));
+				
 			// File path
 			// curl_setopt($this->_client, CURLOPT_INFILE, fopen($this->_file, 'r'));
 				
@@ -172,7 +175,10 @@ class ServiceCaller {
 		}
 		else {
 			// Post Data
-			curl_setopt($this->_client, CURLOPT_POSTFIELDS, array('json' => $this->_params, 'file' => '@'.$this->_file));
+			if(NULL != $this->_params)
+				curl_setopt($this->_client, CURLOPT_POSTFIELDS, array('json' => $this->_params, 'file' => '@'.$this->_file));
+			else
+				curl_setopt($this->_client, CURLOPT_POSTFIELDS, array('file' => '@'.$this->_file));
 			
 			// File path
 			// curl_setopt($this->_client, CURLOPT_INFILE, fopen($this->_file, 'r'));

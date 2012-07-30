@@ -115,6 +115,7 @@ $(function() {
 	$('#main > .client #request .option .api').live('change', function() {
 		var api = $('#main > .client #request .option .api').val();
 		$('#main > .client #request .option .method').html('');
+		$('#main > .client #request .option .segments').val('');
 		$.each(usage[api], function(method, action) {
 			$('#main > .client #request .option .method').append('<option>' + method + '</option>');
 		});
@@ -152,8 +153,10 @@ $(function() {
 		json['method'] = $(request + '.option .method').val();
 
 		// File
-		if($(request + '.file_path').val() != "")
+		if($(request + '.file_path').val() != "") {
 			json['file'] = '/tmp/RESTester/' + $(request + '.file_path')[0].files.item(0).name;
+			$(request + '.file_path').val('');
+		}
 		
 		// Header
 		$.each($(request + '.header div'), function() {
